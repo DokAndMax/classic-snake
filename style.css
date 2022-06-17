@@ -1,0 +1,44 @@
+button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    text-align: left;
+    width: 100%;
+}
+
+button:hover {
+    background: #000;
+    color: #96d201;
+}
+
+.field {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    font-size: 5vmin;
+    height: 90vh;
+    justify-content: center;
+}
+
+.info-field {
+    border-bottom-style: dotted;
+    border-width: thick;
+    margin-bottom: 20px;
+    width: 91vw;
+}
+
+.game-field {
+    border-style: dotted;
+    border-width: thick;
+}
+
+.menu {
+    font-size: 7vmin;
+    margin: 20vh auto;
+    width: fit-content;
+}
+
+.hidden {
+    display: none;
+}
