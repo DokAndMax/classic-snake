@@ -16,7 +16,7 @@ button:hover {
     align-items: center;
     display: flex;
     flex-direction: column;
-    font-size: 5vmin;
+    font-size: 7vmin;
     height: 90vh;
     justify-content: center;
 }
@@ -25,7 +25,6 @@ button:hover {
     border-bottom-style: dotted;
     border-width: thick;
     margin-bottom: 20px;
-    width: 91vw;
 }
 
 .game-field {
