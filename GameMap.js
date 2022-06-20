@@ -3,10 +3,17 @@ class GameMap {
   device;
   #snakeSpawnProperties = {x: 0.1, y: 0.5, direction: GameMap.directions.right,};
   boundaries = [];
+  #gameWidth;
+  #gameHeight;
 
   constructor(name, device) {
     this.name = name;
     this.device = device;
+  }
+
+  setGameSize(width, height) {
+    this.#gameWidth = width;
+    this.#gameHeight = height;
   }
 
   addLine(from, to) {
@@ -17,39 +24,41 @@ class GameMap {
   }
 
   get snakeSpawnProperties() {
-    return this.convertToSquareCoords(this.#snakeSpawnProperties);
+    return {
+      ...this.#snakeSpawnProperties,
+      x: Math.round(this.#snakeSpawnProperties.x * this.#gameWidth),
+      y: Math.round(this.#snakeSpawnProperties.y * this.#gameHeight),
+    };
   }
 
   set snakeSpawnProperties(value) {
     this.#snakeSpawnProperties = value;
   }
 
-  convertToSquareCoords(value) {
-    return {
-      ...value,
-      x: Math.round(value.x * this.gameWidthSquares),
-      y: Math.round(value.y * this.gameHeightSquares),
-    };
-  }
+  drawMap() {
 
-  initMap(renderArea) {
-    this.renderArea = renderArea;
-    this.gameWidthSquares = renderArea.length;
-    this.gameHeightSquares = renderArea[0].length;
   }
 
   static directions = {
-    up(obj) {
-      obj.y++
+    up(obj, ...mapEdge) {
+      obj.y--;
+      if (mapEdge.length && obj.y <= -1)
+        obj.y = mapEdge[1] - 1;
     },
-    down(obj) {
-      obj.y--
+    down(obj, ...mapEdge) {
+      obj.y++;
+      if (mapEdge.length && obj.y >= mapEdge[1])
+        obj.y = 0;
     },
-    left(obj) {
-      obj.x--
+    left(obj, ...mapEdge) {
+      obj.x--;
+      if (mapEdge.length && obj.x <= -1)
+        obj.x = mapEdge[0] - 1;
     },
-    right(obj) {
-      obj.x++
+    right(obj, ...mapEdge) {
+      obj.x++;
+      if (mapEdge.length && obj.x >= mapEdge[0])
+        obj.x = 0;
     },
   }
 }

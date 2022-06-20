@@ -1,14 +1,11 @@
 import {GameMap} from "./GameMap.js";
 
 export default class Snake {
-  direction = "";
+  direction;
   #length = 5;
-  snakeParts = new Array(5);
-
-  constructor(renderArea, map) {
-    this.renderArea = renderArea;
-    this.initSnake(map.snakeSpawnProperties)
-  }
+  snakeParts = [];
+  #gameWidth;
+  #gameHeight;
 
   set length(n) {
     if (this.snakeParts.length)
@@ -19,9 +16,15 @@ export default class Snake {
     return this.#length
   }
 
-  initSnake(snakeSpawnProperties) {
-    for (let i = {...snakeSpawnProperties, i: 0}; i.i < this.length; i.direction(i), i.i++)
-      this.renderArea[i.x][i.y] = new PartOfSnake("body");
+  initSnake(map) {
+    this.direction = map.snakeSpawnProperties.direction;
+    for (let obj = {...map.snakeSpawnProperties}, i = 0; i < this.length; this.direction(obj), i++)
+      this.snakeParts.unshift(new PartOfSnake({x: obj.x, y: obj.y}, this.direction));
+  }
+
+  setGameSize(width, height) {
+    this.#gameWidth = width;
+    this.#gameHeight = height;
   }
 
   changeDirection(direction) {
@@ -29,14 +32,36 @@ export default class Snake {
   }
 
   moveForward() {
+    let intDirection;
+    let nextDirection = this.direction;
+    this.snakeParts.forEach((snakePart) => {
+      intDirection = snakePart.direction;
+      snakePart.direction = nextDirection;
+      nextDirection = intDirection;
+      snakePart.direction(snakePart.pos, this.#gameWidth, this.#gameHeight)
+    });
   }
 }
 
 class PartOfSnake {
-  constructor(type) {
-    this.direction = "right";
-    this.posX = 0;
-    this.posY = 0;
-    this.type = "body";
+  #pos;
+  direction;
+  type = "body";
+
+  constructor(pos, direction) {
+    this.pos = pos;
+    this.direction = direction;
+  }
+
+  set pos(obj) {
+    this.#pos = obj;
+  }
+
+  get pos() {
+    return this.#pos;
+  }
+
+  delete(context) {
+
   }
 }

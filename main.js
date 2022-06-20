@@ -9,10 +9,10 @@ const settings = {
   map: defaultMaps[0],
   gameIntervalID: 0,
 };
-const gameRender = new GameRender(gameField)
-settings.map.initMap(gameRender.renderArea);
-const snake = new Snake(gameRender.renderArea, settings.map);
+const gameRender = new GameRender(gameField);
+const snake = new Snake();
 
+addEventListener('endGame', endGame);
 window.addEventListener('resize', () => document.location.reload());
 document.querySelector("#startGame").addEventListener('click', startGame);
 document.querySelector(".field").addEventListener('click', pauseGame);
@@ -23,11 +23,21 @@ gameField.setAttribute("height", `${gameRender.gameFieldHeight}`);
 
 function startGame(event) {
   switchToElement("field");
-  settings.intervalID = setInterval(() => gameRender.tick(), settings.speed);
+  gameRender.setMap(settings.map);
+  gameRender.setSnake(snake);
+  snake.initSnake(settings.map)
+  settings.intervalID = setInterval(() => {
+    snake.moveForward();
+    gameRender.tick();
+  }, settings.speed);
 }
 
 function pauseGame(event) {
   switchToElement("menu");
+}
+
+function endGame(event) {
+
 }
 
 function switchToElement(elementClass) {

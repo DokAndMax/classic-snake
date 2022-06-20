@@ -1,4 +1,8 @@
 export default class GameRender {
+  #snakeParts;
+  #snakeSpawnProperties;
+  #mapBoundaries;
+
   constructor(gameField) {
     this.gameField = gameField;
     this.gameFieldContext = gameField.getContext("2d");
@@ -7,20 +11,26 @@ export default class GameRender {
     let height = window.innerHeight * 0.75;
     this.isMobile = height > width;
     this.squareSize = Math.ceil((this.isMobile ? height : width) / 28);
-    this.renderArea = [];
     this.gameWidthSquares = Math.floor(width / this.squareSize);
     this.gameHeightSquares = Math.floor(height / this.squareSize);
     this.gameFieldWidth = this.gameWidthSquares * this.squareSize;
     this.gameFieldHeight = this.gameHeightSquares * this.squareSize;
-    for (let i = 0; i < this.gameWidthSquares; i++)
-      this.renderArea[i] = new Array(this.gameHeightSquares);
   }
 
   tick() {
     this.clearGameField();
-    this.drawSquare()
+    this.drawSquare();
     this.drawGrid();
+  }
 
+  setSnake(snake) {
+    this.#snakeParts = snake.snakeParts;
+    snake.setGameSize(this.gameWidthSquares, this.gameHeightSquares);
+  }
+
+  setMap(map) {
+    this.#mapBoundaries = map.boundaries;
+    map.setGameSize(this.gameWidthSquares, this.gameHeightSquares);
   }
 
   clearGameField() {
@@ -29,13 +39,9 @@ export default class GameRender {
 
   drawSquare() {
     this.gameFieldContext.beginPath();
-    for (let [x, column] of this.renderArea.entries()) {
-      for (let [y, element] of column.entries()) {
-        if (!element)
-          continue;
-        this.gameFieldContext.fillRect(x*this.squareSize, y*this.squareSize, this.squareSize, this.squareSize);
-      }
-    }
+
+    for (let snakePart of this.#snakeParts)
+      this.gameFieldContext.fillRect(snakePart.pos.x * this.squareSize, snakePart.pos.y * this.squareSize, this.squareSize, this.squareSize);
   }
 
   drawGrid() { // for debug
