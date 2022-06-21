@@ -1,5 +1,6 @@
 button {
     background: transparent;
+    display: block;
     border: none;
     cursor: pointer;
     font-size: inherit;

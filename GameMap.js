@@ -1,7 +1,7 @@
 class GameMap {
   name;
   device;
-  #snakeSpawnProperties = {x: 0.1, y: 0.5, direction: GameMap.directions.right,};
+  #snakeSpawnProperties = {pos: {x: 0.1, y: 0.5}, direction: GameMap.directions.right,};
   boundaries = [];
   #gameWidth;
   #gameHeight;
@@ -26,8 +26,10 @@ class GameMap {
   get snakeSpawnProperties() {
     return {
       ...this.#snakeSpawnProperties,
-      x: Math.round(this.#snakeSpawnProperties.x * this.#gameWidth),
-      y: Math.round(this.#snakeSpawnProperties.y * this.#gameHeight),
+      pos: {
+        x: Math.round(this.#snakeSpawnProperties.pos.x * this.#gameWidth),
+        y: Math.round(this.#snakeSpawnProperties.pos.y * this.#gameHeight),
+      }
     };
   }
 
@@ -39,27 +41,34 @@ class GameMap {
 
   }
 
-  static directions = {
-    up(obj, ...mapEdge) {
-      obj.y--;
-      if (mapEdge.length && obj.y <= -1)
-        obj.y = mapEdge[1] - 1;
-    },
-    down(obj, ...mapEdge) {
-      obj.y++;
-      if (mapEdge.length && obj.y >= mapEdge[1])
-        obj.y = 0;
-    },
-    left(obj, ...mapEdge) {
-      obj.x--;
-      if (mapEdge.length && obj.x <= -1)
-        obj.x = mapEdge[0] - 1;
-    },
-    right(obj, ...mapEdge) {
-      obj.x++;
-      if (mapEdge.length && obj.x >= mapEdge[0])
-        obj.x = 0;
-    },
+  static get directions() {
+    let directions = {
+      up() {
+        this.pos.y--;
+        if (this.pos.y <= -1)
+          this.pos.y = this.pos.height - 1;
+      },
+      down() {
+        this.pos.y++;
+        if (this.pos.y >= this.pos.height)
+          this.pos.y = 0;
+      },
+      left() {
+        this.pos.x--;
+        if (this.pos.x <= -1)
+          this.pos.x = this.pos.width - 1;
+      },
+      right() {
+        this.pos.x++;
+        if (this.pos.x >= this.pos.width)
+          this.pos.x = 0;
+      }
+    };
+    directions.up.opposite = directions.down;
+    directions.down.opposite = directions.up;
+    directions.left.opposite = directions.right;
+    directions.right.opposite = directions.left;
+    return directions;
   }
 }
 

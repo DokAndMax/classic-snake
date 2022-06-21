@@ -1,6 +1,8 @@
+import {drawApple, drawBody, drawCornerBody} from "./snakeskins.js";
+
 export default class GameRender {
+  #snake;
   #snakeParts;
-  #snakeSpawnProperties;
   #mapBoundaries;
 
   constructor(gameField) {
@@ -18,12 +20,14 @@ export default class GameRender {
   }
 
   tick() {
+    if (this.checkCollision()) return;
     this.clearGameField();
     this.drawSquare();
-    this.drawGrid();
+    //this.drawGrid();
   }
 
   setSnake(snake) {
+    this.#snake = snake;
     this.#snakeParts = snake.snakeParts;
     snake.setGameSize(this.gameWidthSquares, this.gameHeightSquares);
   }
@@ -38,10 +42,10 @@ export default class GameRender {
   }
 
   drawSquare() {
-    this.gameFieldContext.beginPath();
-
-    for (let snakePart of this.#snakeParts)
-      this.gameFieldContext.fillRect(snakePart.pos.x * this.squareSize, snakePart.pos.y * this.squareSize, this.squareSize, this.squareSize);
+    for (let snakePart of this.#snakeParts) {
+      drawBody(this.gameFieldContext, snakePart.pos.x, snakePart.pos.y, this.squareSize);
+    }
+    drawApple(this.gameFieldContext, this.#snakeParts.apple.pos.x, this.#snakeParts.apple.pos.y, this.squareSize);
   }
 
   drawGrid() { // for debug
@@ -53,6 +57,26 @@ export default class GameRender {
       this.gameFieldContext.lineTo(this.gameFieldWidth, i);
     }
     this.gameFieldContext.stroke();
+  }
+
+  checkCollision() {
+    let isCollision = false;
+    let headPos = this.#snakeParts[0].pos;
+    let applePos = this.#snakeParts.apple.pos
+    if (applePos.x === headPos.x &&
+      applePos.y === headPos.y) {
+      this.#snake.incrementLength();
+      return isCollision;
+    }
+    this.#snakeParts.forEach((snakePart, index) => {
+      if (index === 0) return;
+      if (headPos.x === snakePart.pos.x &&
+        headPos.y === snakePart.pos.y) {
+        isCollision = true;
+        document.dispatchEvent(new Event('collision'));
+      }
+    });
+    return isCollision;
   }
 }
 
