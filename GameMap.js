@@ -1,7 +1,10 @@
 class GameMap {
   name;
   device;
-  #snakeSpawnProperties = {pos: {x: 0.1, y: 0.5}, direction: GameMap.directions.right,};
+  #snakeSpawnProperties = {
+    pos: { x: 0.1, y: 0.5 },
+    direction: GameMap.directions.right,
+  };
   boundaries = [];
   #gameWidth;
   #gameHeight;
@@ -42,7 +45,7 @@ class GameMap {
   }
 
   static get directions() {
-    let directions = {
+    const directions = {
       up() {
         this.pos.y--;
         if (this.pos.y <= -1)
@@ -73,8 +76,8 @@ class GameMap {
 }
 
 
-let defaultMaps = [
-  new GameMap("No maze", 'any'),
+const defaultMaps = [
+  new GameMap('No maze', 'any'),
 ];
 
-export {GameMap, defaultMaps};
+export { GameMap, defaultMaps };

@@ -1,4 +1,4 @@
-import {drawApple, drawBody, drawCornerBody} from "./snakeskins.js";
+import { skins } from './skins.js';
 
 export default class GameRender {
   #snake;
@@ -7,10 +7,10 @@ export default class GameRender {
 
   constructor(gameField) {
     this.gameField = gameField;
-    this.gameFieldContext = gameField.getContext("2d");
+    this.gameFieldContext = gameField.getContext('2d');
 
-    let width = window.innerWidth * 0.9;
-    let height = window.innerHeight * 0.75;
+    const width = window.innerWidth * 0.9;
+    const height = window.innerHeight * 0.75;
     this.isMobile = height > width;
     this.squareSize = Math.ceil((this.isMobile ? height : width) / 28);
     this.gameWidthSquares = Math.floor(width / this.squareSize);
@@ -22,8 +22,8 @@ export default class GameRender {
   tick() {
     if (this.checkCollision()) return;
     this.clearGameField();
-    this.drawSquare();
-    //this.drawGrid();
+    this.drawSnake();
+    this.drawGrid();
   }
 
   setSnake(snake) {
@@ -38,14 +38,40 @@ export default class GameRender {
   }
 
   clearGameField() {
-    this.gameFieldContext.clearRect(0, 0, this.gameFieldWidth, this.gameFieldHeight);
+    this.gameFieldContext.clearRect(0, 0,
+      this.gameFieldWidth, this.gameFieldHeight);
   }
 
-  drawSquare() {
-    for (let snakePart of this.#snakeParts) {
-      drawBody(this.gameFieldContext, snakePart.pos.x, snakePart.pos.y, this.squareSize);
+  drawSnake() {
+    for (const snakePart of this.#snakeParts) {
+      this.drawPart(snakePart);
     }
-    drawApple(this.gameFieldContext, this.#snakeParts.apple.pos.x, this.#snakeParts.apple.pos.y, this.squareSize);
+    this.drawPart(this.#snakeParts.apple);
+  }
+
+  drawPart(snakePart) {
+    const x = snakePart.pos.x;
+    const y = snakePart.pos.y;
+    const dirn = snakePart.direction;
+    const sqSize = this.squareSize;
+    let angle = 0;
+    if (dirn.name === 'down') angle = 90;
+    if (dirn.name === 'up') angle = 270;
+    angle *= (Math.PI / 180);
+
+    const absLines = skins[snakePart.type].map(([sqx, sqy]) => {
+      let xnew = 2 + (sqx - 2) * Math.cos(angle) - (sqy - 2) * Math.sin(angle);
+      const ynew = 2 + (sqx - 2) * Math.sin(angle) + (sqy - 2) * Math.cos(angle);
+      if (dirn.name === 'down' || dirn.name === 'left')
+        xnew = -(xnew - 2) + 2;
+      const absx = x * sqSize + (sqSize / 4 * xnew);
+      const absy = y * sqSize + (sqSize / 4 * ynew);
+      return [absx, absy];
+    });
+    this.gameFieldContext.beginPath();
+    for (const [x, y] of absLines)
+      this.gameFieldContext.lineTo(x, y);
+    this.gameFieldContext.fill();
   }
 
   drawGrid() { // for debug
@@ -61,8 +87,8 @@ export default class GameRender {
 
   checkCollision() {
     let isCollision = false;
-    let headPos = this.#snakeParts[0].pos;
-    let applePos = this.#snakeParts.apple.pos
+    const headPos = this.#snakeParts[0].pos;
+    const applePos = this.#snakeParts.apple.pos;
     if (applePos.x === headPos.x &&
       applePos.y === headPos.y) {
       this.#snake.incrementLength();
