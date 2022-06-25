@@ -2,7 +2,7 @@ class GameMap {
   name;
   device;
   #snakeSpawnProperties = {
-    pos: { x: 0.1, y: 0.5 },
+    pos: { x: 0.5, y: 0.5 },
     direction: GameMap.directions.right,
   };
   boundaries = [];
@@ -28,7 +28,7 @@ class GameMap {
 
   get snakeSpawnProperties() {
     return {
-      ...this.#snakeSpawnProperties,
+      direction: this.#snakeSpawnProperties.direction,
       pos: {
         x: Math.round(this.#snakeSpawnProperties.pos.x * this.#gameWidth),
         y: Math.round(this.#snakeSpawnProperties.pos.y * this.#gameHeight),
@@ -46,10 +46,10 @@ class GameMap {
 
   static get directions() {
     const directions = {
-      up() {
-        this.pos.y--;
-        if (this.pos.y <= -1)
-          this.pos.y = this.pos.height - 1;
+      right() {
+        this.pos.x++;
+        if (this.pos.x >= this.pos.width)
+          this.pos.x = 0;
       },
       down() {
         this.pos.y++;
@@ -61,16 +61,20 @@ class GameMap {
         if (this.pos.x <= -1)
           this.pos.x = this.pos.width - 1;
       },
-      right() {
-        this.pos.x++;
-        if (this.pos.x >= this.pos.width)
-          this.pos.x = 0;
-      }
+      up() {
+        this.pos.y--;
+        if (this.pos.y <= -1)
+          this.pos.y = this.pos.height - 1;
+      },
     };
-    directions.up.opposite = directions.down;
-    directions.down.opposite = directions.up;
-    directions.left.opposite = directions.right;
     directions.right.opposite = directions.left;
+    directions.right.angle = 0;
+    directions.down.opposite = directions.up;
+    directions.down.angle = 90;
+    directions.left.opposite = directions.right;
+    directions.left.angle = 180;
+    directions.up.opposite = directions.down;
+    directions.up.angle = 270;
     return directions;
   }
 }

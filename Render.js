@@ -23,7 +23,7 @@ export default class GameRender {
     if (this.checkCollision()) return;
     this.clearGameField();
     this.drawSnake();
-    this.drawGrid();
+    //this.drawGrid();
   }
 
   setSnake(snake) {
@@ -54,16 +54,21 @@ export default class GameRender {
     const y = snakePart.pos.y;
     const dirn = snakePart.direction;
     const sqSize = this.squareSize;
-    let angle = 0;
-    if (dirn.name === 'down') angle = 90;
-    if (dirn.name === 'up') angle = 270;
+    let angle = snakePart.direction.angle;
+    if (snakePart.flag)
+      angle -= 90;
     angle *= (Math.PI / 180);
 
-    const absLines = skins[snakePart.type].map(([sqx, sqy]) => {
+    const absLines = snakePart.type.map(([sqx, sqy]) => {
       let xnew = 2 + (sqx - 2) * Math.cos(angle) - (sqy - 2) * Math.sin(angle);
-      const ynew = 2 + (sqx - 2) * Math.sin(angle) + (sqy - 2) * Math.cos(angle);
-      if (dirn.name === 'down' || dirn.name === 'left')
-        xnew = -(xnew - 2) + 2;
+      let ynew = 2 + (sqx - 2) * Math.sin(angle) + (sqy - 2) * Math.cos(angle);
+      if (snakePart.type !== skins.cornerBody) {
+        if (dirn.name === 'down') {
+          xnew = -(xnew - 2) + 2;
+        }
+        if (dirn.name === 'left')
+          ynew = -(ynew - 2) + 2;
+      }
       const absx = x * sqSize + (sqSize / 4 * xnew);
       const absy = y * sqSize + (sqSize / 4 * ynew);
       return [absx, absy];
@@ -94,6 +99,7 @@ export default class GameRender {
       this.#snake.incrementLength();
       return isCollision;
     }
+
     this.#snakeParts.forEach((snakePart, index) => {
       if (index === 0) return;
       if (headPos.x === snakePart.pos.x &&

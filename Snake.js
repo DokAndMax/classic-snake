@@ -1,3 +1,5 @@
+import { skins } from './skins.js';
+
 export default class Snake {
   direction;
   #length = 7;
@@ -10,22 +12,23 @@ export default class Snake {
     this.#gameHeight = height;
   }
 
-  initSnake(map) {
-    this.direction = map.snakeSpawnProperties.direction;
-    for (let obj = { ...map.snakeSpawnProperties }, i = 0; i < this.#length; obj.direction(), i++) {
-      this.snakeParts.unshift(new PartOfSnake({
+  initSnake(spawnProperties) {
+    this.direction = spawnProperties.direction;
+    const obj = { ...spawnProperties };
+    obj.direction = this.direction.opposite;
+    for (let i = 0; i <= this.#length; obj.direction(), i++) {
+      let newType = skins.body;
+      if (i === 0) newType = skins.head;
+      else if (i === this.#length - 1) newType = skins.tail;
+      else if (i === this.#length) newType = skins.apple;
+      this.snakeParts.push(new PartOfSnake({
         x: obj.pos.x,
         y: obj.pos.y,
         width: this.#gameWidth,
         height: this.#gameHeight,
-      }, this.direction));
+      }, this.direction, newType));
     }
-    this.snakeParts.apple = new PartOfSnake({
-      width: this.#gameWidth,
-      height: this.#gameHeight,
-    }, this.direction);
-    this.snakeParts[0].type = 'head';
-    this.snakeParts[this.#length - 1].type = 'tail';
+    this.snakeParts.apple = this.snakeParts.pop();
   }
 
   changeDirection(direction) {
@@ -39,12 +42,16 @@ export default class Snake {
     let intDirection;
     let nextDirection = this.direction;
     let intSkin;
-    let nextSkin = 'body';
+    let nextSkin = skins.body;
     this.snakeParts[0].direction = this.direction;
     this.snakeParts.forEach((snakePart, i) => {
-      if (i !== this.#length - 1 && i !== 0) {
-        if (snakePart.direction.name !== nextDirection.name)
-          nextSkin = 'cornerBody';
+      //snakePart.isFat = true;
+      if (i !== 0 && i !== this.#length - 1) {
+        const delta = nextDirection.angle - snakePart.direction.angle;
+        if (delta !== 0) {
+          nextSkin = skins.cornerBody;
+        }
+        snakePart.flag = (delta === -90 || delta === 270);
         intSkin = snakePart.type;
         snakePart.type = nextSkin;
         nextSkin = intSkin;
@@ -53,13 +60,15 @@ export default class Snake {
       intDirection = snakePart.direction;
       snakePart.direction = nextDirection;
       nextDirection = intDirection;
+      if (i === 0) snakePart.openMouth(this.snakeParts.apple);
     });
   }
 
   incrementLength() {
+    this.snakeParts[0].isFat = true;
     const last = this.snakeParts[this.#length - 1];
-    last.type = 'body';
     const temp = last.copy();
+    last.type = skins.body;
     temp.direction.opposite.call(temp);
     this.snakeParts.push(temp);
     this.snakeParts.apple.randomizePos();
@@ -68,18 +77,14 @@ export default class Snake {
 }
 
 class PartOfSnake {
-  constructor(pos, direction) {
+  constructor(pos, direction, type) {
     this.pos = pos;
-    this.type = 'body';
-    if (pos.x === undefined) {
-      this.type = 'apple';
-      this.randomizePos();
-    }
     this.direction = direction;
+    this.type = type;
+    if (type === skins.apple) this.randomizePos();
   }
 
   randomizePos() {
-    if (this.type !== 'apple') return;
     this.pos.x = Math.floor(Math.random() * this.pos.width);
     this.pos.y = Math.floor(Math.random() * this.pos.height);
   }
@@ -91,7 +96,18 @@ class PartOfSnake {
       width: this.pos.width,
       height: this.pos.height,
     }, this.direction);
-    target.type = 'tail';
+    target.type = this.type;
     return target;
+  }
+
+  openMouth(apple) {
+    const obj = this.copy();
+    obj.direction();
+    if (apple.pos.x === obj.pos.x &&
+      apple.pos.y === obj.pos.y)
+      this.type = skins.openMouth;
+    else
+      this.type = skins.head;
+    return true;
   }
 }

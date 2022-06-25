@@ -6,7 +6,7 @@ import { defineControls, removeControls } from './controls.js';
 const infoField = document.querySelector('.info-field');
 const gameField = document.querySelector('.game-field');
 const settings = {
-  speed: 500,
+  speed: 650,
   map: defaultMaps[0],
   gameIntervalID: 0,
   paused: false,
@@ -31,7 +31,7 @@ function startGame() {
   defineControls(snake);
   gameRender.setMap(settings.map);
   gameRender.setSnake(snake);
-  snake.initSnake(settings.map);
+  snake.initSnake(settings.map.snakeSpawnProperties);
   switchToElement('field');
   settings.intervalID = setInterval(() => {
     if (settings.paused) return;
