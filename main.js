@@ -1,12 +1,12 @@
-import GameRender from "./Render.js";
-import Snake from "./Snake.js";
-import {GameMap, defaultMaps} from "./GameMap.js";
-import {defineControls, removeControls} from "./controls.js";
+import GameRender from './Render.js';
+import Snake from './Snake.js';
+import { defaultMaps, GameMap } from './GameMap.js';
+import { defineControls, removeControls } from './controls.js';
 
-const infoField = document.querySelector(".info-field");
-const gameField = document.querySelector(".game-field");
+const infoField = document.querySelector('.info-field');
+const gameField = document.querySelector('.game-field');
 const settings = {
-  speed: 150,
+  speed: 500,
   map: defaultMaps[0],
   gameIntervalID: 0,
   paused: false,
@@ -16,14 +16,14 @@ let snake;
 
 addEventListener('endGame', endGame);
 window.addEventListener('resize', () => document.location.reload());
-document.querySelector("#startGame").addEventListener('click', startGame);
-document.querySelector("#continueGame").addEventListener('click', continueGame);
+document.querySelector('#startGame').addEventListener('click', startGame);
+document.querySelector('#continueGame').addEventListener('click', continueGame);
 document.addEventListener('collision', endGame);
-document.querySelector(".field").addEventListener('click', pauseGame);
+document.querySelector('.field').addEventListener('click', pauseGame);
 infoField.style.width = `${gameRender.gameFieldWidth + 10}px`;
-gameField.addEventListener('click', (e) => e.stopPropagation());
-gameField.setAttribute("width", `${gameRender.gameFieldWidth}`);
-gameField.setAttribute("height", `${gameRender.gameFieldHeight}`);
+gameField.addEventListener('click', e => e.stopPropagation());
+gameField.setAttribute('width', `${gameRender.gameFieldWidth}`);
+gameField.setAttribute('height', `${gameRender.gameFieldHeight}`);
 
 function startGame() {
   endGame();
@@ -31,11 +31,10 @@ function startGame() {
   defineControls(snake);
   gameRender.setMap(settings.map);
   gameRender.setSnake(snake);
-  snake.initSnake(settings.map)
-  import( "./controls.js");
+  snake.initSnake(settings.map);
   switchToElement('field');
   settings.intervalID = setInterval(() => {
-    if(settings.paused) return;
+    if (settings.paused) return;
     snake.moveForward();
     gameRender.tick();
   }, settings.speed);
@@ -47,7 +46,7 @@ function pauseGame() {
 }
 
 function continueGame() {
-  if(!settings.paused) return;
+  if (!settings.paused) return;
   settings.paused = false;
   switchToElement('field');
 }
@@ -60,10 +59,10 @@ function endGame() {
 }
 
 function switchToElement(elementClass) {
-  let elementList = document.querySelectorAll("body>div");
-  for (let element of elementList)
-    element.classList.add("hidden");
-  document.querySelector(`.${elementClass}`).classList.remove("hidden");
+  const elementList = document.querySelectorAll('body>div');
+  for (const element of elementList)
+    element.classList.add('hidden');
+  document.querySelector(`.${elementClass}`).classList.remove('hidden');
 }
 
-export {GameRender, Snake, GameMap};
+export { GameRender, Snake, GameMap };
