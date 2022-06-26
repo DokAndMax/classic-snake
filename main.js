@@ -1,12 +1,13 @@
 import GameRender from './Render.js';
 import Snake from './Snake.js';
-import { defaultMaps, GameMap } from './GameMap.js';
+import { defaultMaps } from './GameMap.js';
 import { defineControls } from './controls.js';
+import './menus/level.js';
 
 const infoField = document.querySelector('.info-field');
 const gameField = document.querySelector('.game-field');
 const settings = {
-  speed: 300,
+  speed: 5,
   map: defaultMaps[0],
   gameIntervalID: 0,
   paused: false,
@@ -16,10 +17,11 @@ let snake;
 
 addEventListener('endGame', endGame);
 window.addEventListener('resize', () => document.location.reload());
-document.querySelector('#startGame').addEventListener('click', startGame);
+document.querySelector('#start-game').addEventListener('click', startGame);
 document.querySelector('.field').addEventListener('click', pauseGame);
-document.querySelector('#continueGame').addEventListener('click', continueGame);
+document.querySelector('#continue-game').addEventListener('click', continueGame);
 document.addEventListener('collision', endGame);
+document.addEventListener('appleEaten', increaseScore);
 infoField.style.width = `${gameRender.gameFieldWidth + 6}px`;
 gameField.addEventListener('click', e => e.stopPropagation());
 gameField.setAttribute('width', `${gameRender.gameFieldWidth}`);
@@ -37,7 +39,7 @@ function startGame() {
     if (settings.paused) return;
     snake.moveForward();
     gameRender.tick();
-  }, settings.speed);
+  }, Math.round(750 / settings.speed));
 }
 
 function pauseGame() {
@@ -55,6 +57,11 @@ function endGame() {
   settings.paused = false;
   clearInterval(settings.intervalID);
   switchToElement('menu');
+  infoField.textContent = '0';
+}
+
+function increaseScore() {
+  infoField.textContent = `${parseInt(infoField.textContent) + settings.speed}`;
 }
 
 function switchToElement(elementClass) {
@@ -64,4 +71,4 @@ function switchToElement(elementClass) {
   document.querySelector(`.${elementClass}`).classList.remove('hidden');
 }
 
-export { GameRender, Snake, GameMap };
+export { settings, endGame, switchToElement };

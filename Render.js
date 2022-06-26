@@ -85,8 +85,10 @@ export default class GameRender {
     const apple = this.#snakeParts.apple;
     const applePos = apple.pos;
     if (applePos.x === headPos.x &&
-      applePos.y === headPos.y)
+      applePos.y === headPos.y) {
       this.#snake.increaseLength();
+      document.dispatchEvent(new Event('appleEaten'));
+    }
 
     let flag = false;
     do {

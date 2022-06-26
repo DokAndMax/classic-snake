@@ -1,4 +1,4 @@
-import { GameMap } from './main.js';
+import { GameMap } from './GameMap.js';
 
 let touchstartX = 0;
 let touchendX = 0;

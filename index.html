@@ -10,14 +10,28 @@
 <body style="background-color: #96d201">
 <div class="menu">
   <p>——— Classic Snake ———</p>
-  <button id="continueGame">Continue</button>
-  <button id="startGame">New game</button>
-  <button>Level</button>
-  <button>Mazes</button>
+  <button id="continue-game">Continue</button>
+  <button id="start-game">New game</button>
+  <button id="levels-menu-button">Level</button>
 </div>
 <div class="field hidden">
   <div class="info-field">0</div>
   <canvas class="game-field"></canvas>
+</div>
+<div class="levels-menu menu hidden">
+  <p>————— Level —————</p>
+  <div class="levels-container">
+    <button class="level">1</button>
+    <button class="level">2</button>
+    <button class="level">3</button>
+    <button class="level">4</button>
+    <button class="level">5</button>
+    <button class="level">6</button>
+    <button class="level">7</button>
+    <button class="level">8</button>
+    <button class="level">9</button>
+  </div>
+  <button id="back">< Back</button>
 </div>
 <script src="main.js" type="module"></script>
 </body>
