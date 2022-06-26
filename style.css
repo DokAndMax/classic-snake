@@ -1,3 +1,7 @@
+body {
+    overscroll-behavior: contain;
+}
+
 button {
     background: transparent;
     display: block;
@@ -23,14 +27,14 @@ button:hover {
 }
 
 .info-field {
-    border-bottom-style: dotted;
-    border-width: thick;
+    border-bottom-style: solid;
+    border-width: medium;
     margin-bottom: 20px;
 }
 
 .game-field {
-    border-style: dotted;
-    border-width: thick;
+    border-style: solid;
+    border-width: medium;
 }
 
 .menu {

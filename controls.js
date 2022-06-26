@@ -1,7 +1,13 @@
 import { GameMap } from './main.js';
 
-function qwerty(snake, event) {
-  switch (event.key) {
+let touchstartX = 0;
+let touchendX = 0;
+let touchstartY = 0;
+let touchendY = 0;
+
+function controls(snake, e) {
+  if (!e) e = { key: checkDirection() };
+  switch (e.key) {
   case 'ArrowUp':
     snake.changeDirection(GameMap.directions.up);
     break;
@@ -18,10 +24,29 @@ function qwerty(snake, event) {
 }
 
 const defineControls = snake => {
-  window.addEventListener('keydown', qwerty.bind(null, snake));
-};
-const removeControls = () => {
-  window.removeEventListener('keydown', qwerty);
+  const controlsWithSnake = (...args) => controls(snake, ...args);
+  document.addEventListener('keydown', controlsWithSnake);
+  document.addEventListener('touchstart', (e => {
+    touchstartX = e.changedTouches[0].screenX;
+    touchstartY = e.changedTouches[0].screenY;
+  }));
+
+  document.addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX;
+    touchendY = e.changedTouches[0].screenY;
+    controlsWithSnake();
+  });
 };
 
-export { defineControls, removeControls };
+function checkDirection() {
+  if (Math.abs(touchstartX - touchendX) > Math.abs(touchstartY - touchendY)) {
+    if (touchendX < touchstartX) return 'ArrowLeft';
+    if (touchendX > touchstartX) return 'ArrowRight';
+  } else {
+    if (touchendY < touchstartY) return 'ArrowUp';
+    if (touchendY > touchstartY) return 'ArrowDown';
+  }
+}
+
+
+export { defineControls };

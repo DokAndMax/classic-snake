@@ -1,4 +1,4 @@
-import { skins } from './skins.js';
+import { skins } from '/skins.js';
 
 export default class GameRender {
   #snake;
@@ -23,7 +23,6 @@ export default class GameRender {
     if (this.checkCollision()) return;
     this.clearGameField();
     this.drawSnake();
-    //this.drawGrid();
   }
 
   setSnake(snake) {
@@ -54,18 +53,19 @@ export default class GameRender {
     const y = snakePart.pos.y;
     const dirn = snakePart.direction;
     const sqSize = this.squareSize;
-    let angle = snakePart.direction.angle;
-    if (snakePart.flag)
+    let type = snakePart.type;
+    let angle = dirn.angle;
+    if (snakePart.isFat)
+      type = skins.getRelative(type);
+    if (snakePart.flag && snakePart.type === 'cornerBody')
       angle -= 90;
     angle *= (Math.PI / 180);
-
-    const absLines = snakePart.type.map(([sqx, sqy]) => {
+    const absLines = skins[type].map(([sqx, sqy]) => {
       let xnew = 2 + (sqx - 2) * Math.cos(angle) - (sqy - 2) * Math.sin(angle);
       let ynew = 2 + (sqx - 2) * Math.sin(angle) + (sqy - 2) * Math.cos(angle);
-      if (snakePart.type !== skins.cornerBody) {
-        if (dirn.name === 'down') {
+      if (snakePart.type !== 'cornerBody') {
+        if (dirn.name === 'down')
           xnew = -(xnew - 2) + 2;
-        }
         if (dirn.name === 'left')
           ynew = -(ynew - 2) + 2;
       }
@@ -79,35 +79,34 @@ export default class GameRender {
     this.gameFieldContext.fill();
   }
 
-  drawGrid() { // for debug
-    this.gameFieldContext.beginPath();
-    for (let i = 0; i <= Math.max(this.gameFieldWidth, this.gameFieldHeight); i += this.squareSize) {
-      this.gameFieldContext.moveTo(i, 0);
-      this.gameFieldContext.lineTo(i, this.gameFieldHeight);
-      this.gameFieldContext.moveTo(0, i);
-      this.gameFieldContext.lineTo(this.gameFieldWidth, i);
-    }
-    this.gameFieldContext.stroke();
-  }
-
   checkCollision() {
     let isCollision = false;
     const headPos = this.#snakeParts[0].pos;
-    const applePos = this.#snakeParts.apple.pos;
+    const apple = this.#snakeParts.apple;
+    const applePos = apple.pos;
     if (applePos.x === headPos.x &&
-      applePos.y === headPos.y) {
-      this.#snake.incrementLength();
-      return isCollision;
-    }
+      applePos.y === headPos.y)
+      this.#snake.increaseLength();
 
-    this.#snakeParts.forEach((snakePart, index) => {
-      if (index === 0) return;
-      if (headPos.x === snakePart.pos.x &&
-        headPos.y === snakePart.pos.y) {
-        isCollision = true;
-        document.dispatchEvent(new Event('collision'));
-      }
-    });
+    let flag = false;
+    do {
+      flag = false;
+      this.#snakeParts.forEach((snakePart, index) => {
+        if ((applePos.x === snakePart.pos.x &&
+          applePos.y === snakePart.pos.y)) {
+          apple.randomizePos();
+          flag = true;
+        }
+
+        if (index === 0) return;
+        if (headPos.x === snakePart.pos.x &&
+          headPos.y === snakePart.pos.y) {
+          isCollision = true;
+          document.dispatchEvent(new Event('collision'));
+        }
+      });
+    } while (flag);
+
     return isCollision;
   }
 }
