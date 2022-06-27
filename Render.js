@@ -1,4 +1,4 @@
-import { skins } from '/skins.js';
+import { skins } from './skins.js';
 
 export default class GameRender {
   #snake;
