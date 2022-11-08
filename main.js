@@ -1,8 +1,8 @@
-import GameRender from './Render.js';
-import Snake from './Snake.js';
-import { defaultMaps } from './GameMap.js';
+import Engine from './Engine.js';
+import SnakeControl from './Controls/SnakeControl.js';
+import { defaultMaps } from './Controls/MapControl.js';
 import { defineControls } from './controls.js';
-import './menus/level.js';
+import './Menus/level.js';
 
 const infoField = document.querySelector('.info-field');
 const gameField = document.querySelector('.game-field');
@@ -12,7 +12,7 @@ const settings = {
   gameIntervalID: 0,
   paused: false,
 };
-const gameRender = new GameRender(gameField);
+const gameRender = new Engine(gameField);
 let snake;
 
 addEventListener('endGame', endGame);
@@ -29,7 +29,7 @@ gameField.setAttribute('height', `${gameRender.gameFieldHeight}`);
 
 function startGame() {
   endGame();
-  snake = new Snake();
+  snake = new SnakeControl();
   defineControls(snake);
   gameRender.setMap(settings.map);
   gameRender.setSnake(snake);
@@ -37,7 +37,6 @@ function startGame() {
   switchToElement('field');
   settings.intervalID = setInterval(() => {
     if (settings.paused) return;
-    snake.moveForward();
     gameRender.tick();
   }, Math.round(750 / settings.speed));
 }

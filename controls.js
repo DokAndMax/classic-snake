@@ -1,29 +1,39 @@
-import { GameMap } from './GameMap.js';
+import { MapControl } from './Controls/MapControl.js';
 
 let touchstartX = 0;
 let touchendX = 0;
 let touchstartY = 0;
 let touchendY = 0;
 
-function controls(snake, e) {
+const checkDirection = () => {
+  if (Math.abs(touchstartX - touchendX) > Math.abs(touchstartY - touchendY)) {
+    if (touchendX < touchstartX) return 'ArrowLeft';
+    if (touchendX > touchstartX) return 'ArrowRight';
+  } else {
+    if (touchendY < touchstartY) return 'ArrowUp';
+    if (touchendY > touchstartY) return 'ArrowDown';
+  }
+};
+
+const controls = (snake, e) => {
   if (!e) e = { key: checkDirection() };
   switch (e.key) {
   case 'ArrowUp':
-    snake.changeDirection(GameMap.directions.up);
+    snake.changeDirection(90);
     break;
   case 'ArrowDown':
-    snake.changeDirection(GameMap.directions.down);
+    snake.changeDirection(270);
     break;
   case 'ArrowLeft':
-    snake.changeDirection(GameMap.directions.left);
+    snake.changeDirection(180);
     break;
   case 'ArrowRight':
-    snake.changeDirection(GameMap.directions.right);
+    snake.changeDirection(0);
     break;
   }
-}
+};
 
-const defineControls = snake => {
+export const defineControls = snake => {
   const controlsWithSnake = (...args) => controls(snake, ...args);
   document.addEventListener('keydown', controlsWithSnake);
   document.addEventListener('touchstart', (e => {
@@ -37,16 +47,3 @@ const defineControls = snake => {
     controlsWithSnake();
   });
 };
-
-function checkDirection() {
-  if (Math.abs(touchstartX - touchendX) > Math.abs(touchstartY - touchendY)) {
-    if (touchendX < touchstartX) return 'ArrowLeft';
-    if (touchendX > touchstartX) return 'ArrowRight';
-  } else {
-    if (touchendY < touchstartY) return 'ArrowUp';
-    if (touchendY > touchstartY) return 'ArrowDown';
-  }
-}
-
-
-export { defineControls };

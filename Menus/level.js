@@ -7,7 +7,7 @@ document.querySelector('#back')
   .addEventListener('click',
     () => switchToElement('menu'));
 
-var elements = document.getElementsByClassName('level');
+const elements = document.getElementsByClassName('level');
 
 for (let i = 0; i < elements.length; i++) {
   elements[i].addEventListener('click', setSpeed);
